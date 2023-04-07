@@ -4,6 +4,7 @@ const cors = require('cors');
 const corsValidation = require('./config/corsValidation.js')
 const asyncHandler = require('express-async-handler')
 const errorHandler = require('./middleware/errorLogger.js')
+require('dotenv').config();
 
 const app = express();
 const port = 3000;
@@ -12,7 +13,19 @@ let browser;
 
 const getAllCookies = async (url) => {
   if (!browser) {
-    browser = await puppeteer.launch({ headless: true });
+    browser = await puppeteer.launch({ 
+      args: [
+        "--disable-setuid-sandbox",
+        "--no-sandbox",
+        "--single-process",
+        "--no-zygote",
+      ],
+      executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
+      headless: true 
+    });
   }
   const page = await browser.newPage();
   await page.setRequestInterception(true);
