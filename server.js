@@ -40,6 +40,7 @@ const getAllCookies = async (url) => {
   await page.goto(url);
   const client = await page.target().createCDPSession();
   const cookies = await client.send('Network.getAllCookies');
+  await client.send('Network.clearBrowserCookies')
   await page.close();
   return cookies;
 }
